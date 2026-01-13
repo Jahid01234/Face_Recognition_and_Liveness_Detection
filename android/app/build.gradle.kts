@@ -30,6 +30,10 @@ android {
         versionName = flutter.versionName
     }
 
+    buildFeatures {
+        mlModelBinding= true
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

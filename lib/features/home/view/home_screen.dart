@@ -1,8 +1,10 @@
 import 'package:face_recognition_and_detection/core/const/app_size.dart';
 import 'package:face_recognition_and_detection/core/const/images_path.dart';
 import 'package:face_recognition_and_detection/core/global_widgets/app_primary_button.dart';
+import 'package:face_recognition_and_detection/core/routes/routes.dart';
 import 'package:face_recognition_and_detection/core/style/global_text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -41,7 +43,9 @@ class HomeScreen extends StatelessWidget {
                 bgColor: Colors.grey.shade400,
                 icon: Icons.account_circle_outlined,
                 textColor: Colors.white,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.faceRegistration);
+                },
               ),
               SizedBox(height: getHeight(20)),
               AppPrimaryButton(
@@ -57,7 +61,9 @@ class HomeScreen extends StatelessWidget {
                 bgColor: Colors.grey.shade400,
                 icon: Icons.calendar_view_week,
                 textColor: Colors.white,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.registeredFaces);
+                },
               ),
             ],
           ),

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppPrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final IconData? icon;
   final double? radius;
   final Color? bgColor;
@@ -17,7 +17,7 @@ class AppPrimaryButton extends StatelessWidget {
   const AppPrimaryButton({
     super.key,
     required this.text,
-    required this.onTap,
+    this.onTap,
     this.icon,
     this.bgColor,
     this.border,
