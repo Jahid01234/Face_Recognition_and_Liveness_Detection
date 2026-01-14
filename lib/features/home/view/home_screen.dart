@@ -11,6 +11,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppSizes().init(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -53,13 +54,15 @@ class HomeScreen extends StatelessWidget {
                 bgColor: Colors.grey.shade400,
                 icon: Icons.account_circle,
                 textColor: Colors.white,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.faceRecognition);
+                },
               ),
               SizedBox(height: getHeight(20)),
               AppPrimaryButton(
                 text: "Registered Faces",
                 bgColor: Colors.grey.shade400,
-                icon: Icons.calendar_view_week,
+                icon: Icons.list_alt,
                 textColor: Colors.white,
                 onTap: () {
                   Get.toNamed(AppRoutes.registeredFaces);

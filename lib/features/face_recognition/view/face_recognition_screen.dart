@@ -2,18 +2,17 @@ import 'package:face_recognition_and_detection/core/const/app_size.dart';
 import 'package:face_recognition_and_detection/core/const/images_path.dart';
 import 'package:face_recognition_and_detection/core/global_widgets/app_primary_button.dart';
 import 'package:face_recognition_and_detection/core/style/global_text_style.dart';
-import 'package:face_recognition_and_detection/features/face_registration/controller/face_registration_controller.dart';
+import 'package:face_recognition_and_detection/features/face_recognition/controller/face_recognition_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 
+class FaceRecognitionScreen extends StatelessWidget {
+  FaceRecognitionScreen({super.key});
 
-class FaceRegistrationScreen extends StatelessWidget {
-  FaceRegistrationScreen({super.key});
-
-  final FaceRegistrationController controller =
-  Get.put(FaceRegistrationController());
+  final FaceRecognitionController controller =
+  Get.put(FaceRecognitionController());
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class FaceRegistrationScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 40),
                   Text(
-                    "Face Registration",
+                    "Face Recognition",
                     style: globalTextStyle(
                       fontSize: 22,
                       color: Colors.black45,
@@ -48,31 +47,25 @@ class FaceRegistrationScreen extends StatelessWidget {
 
              SizedBox(height: getHeight(150)),
 
-              // Image Preview Card.......
+              // Image card.......
               Obx(() {
                 if (controller.image.value == null) {
-                  return _emptyPreview();
+                  return _emptyCard();
                 }
-
-                final file = controller.image.value!;
-
                 return Stack(
-                  alignment: Alignment.center,
                   children: [
                     Center(
                       child: Container(
                         height: 300,
                         width: 280,
-                        padding: const EdgeInsets.all(12),
                         decoration: _cardDecoration(),
+                        padding: EdgeInsets.all(10),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(20),
                           child: CustomPaint(
-                            painter: FacePainter(
-                              controller.faces,
-                            ),
+                            painter: FacePainter(controller.faces),
                             child: Image.file(
-                              file,
+                              controller.image.value!,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -81,25 +74,27 @@ class FaceRegistrationScreen extends StatelessWidget {
                     ),
 
                     if (controller.isProcessing.value)
-                      Center(
-                        child: Container(
-                          height: 300,
-                          width: 280,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          ),
+                      const Positioned.fill(
+                        child: Center(
+                          child: CircularProgressIndicator(),
                         ),
                       ),
                   ],
                 );
-               },
-              ),
+              }),
+
+              const SizedBox(height: 30),
+
+              // NAME RESULT........
+              Obx(() => Text(
+                controller.recognizedName.value.isEmpty
+                    ? ""
+                    : "Result: ${controller.recognizedName.value}",
+                style: globalTextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              )),
 
               const Spacer(),
               Obx(
@@ -133,7 +128,6 @@ class FaceRegistrationScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 60),
             ],
           ),
@@ -142,8 +136,8 @@ class FaceRegistrationScreen extends StatelessWidget {
     );
   }
 
-  /// Empty State
-  Widget _emptyPreview() {
+
+  Widget _emptyCard() {
     return Center(
       child: Container(
         height: 300,
@@ -152,13 +146,13 @@ class FaceRegistrationScreen extends StatelessWidget {
         decoration: _cardDecoration(),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                ImagesPath.appLogo,
-                width: 120,
-                height: 120,
-                fit: BoxFit.contain,
-              ),
-            ),
+          child: Image.asset(
+            ImagesPath.appLogo,
+            width: 120,
+            height: 120,
+            fit: BoxFit.contain,
+          ),
+        ),
       ),
     );
   }

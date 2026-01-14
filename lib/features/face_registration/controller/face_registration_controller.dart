@@ -12,27 +12,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 class FaceRegistrationController extends GetxController {
-  // =========================
-  // OBSERVABLE STATES
-  // =========================
+  final TextEditingController nameController = TextEditingController();
   final Rx<File?> image = Rx<File?>(null);
   final RxList<Face> faces = <Face>[].obs;
   final RxBool isProcessing = false.obs;
-
-  final TextEditingController nameController = TextEditingController();
-
-  // =========================
-  // INSTANCES
-  // =========================
   final ImagePicker _picker = ImagePicker();
   late FaceDetector _faceDetector;
   late Interpreter _interpreter;
-
   bool _modelLoaded = false;
 
-  // =========================
-  // LIFECYCLE
-  // =========================
+
   @override
   void onInit() {
     super.onInit();
@@ -40,9 +29,7 @@ class FaceRegistrationController extends GetxController {
     _loadModel();
   }
 
-  // =========================
-  // INIT
-  // =========================
+
   void _initFaceDetector() {
     _faceDetector = GoogleMlKit.vision.faceDetector(
       FaceDetectorOptions(
@@ -63,9 +50,8 @@ class FaceRegistrationController extends GetxController {
     }
   }
 
-  // =========================
-  // IMAGE PICK
-  // =========================
+
+  // IMAGE PICK =========================
   void pickFromGallery() => _pickImage(ImageSource.gallery);
   void pickFromCamera() => _pickImage(ImageSource.camera);
 
@@ -83,9 +69,8 @@ class FaceRegistrationController extends GetxController {
     await _detectFace();
   }
 
-  // =========================
-  // FACE DETECTION
-  // =========================
+
+  // FACE DETECTION =========================
   Future<void> _detectFace() async {
     if (image.value == null) return;
 
@@ -119,9 +104,8 @@ class FaceRegistrationController extends GetxController {
     }
   }
 
-  // =========================
-  // EMBEDDING GENERATION
-  // =========================
+
+  // EMBEDDING GENERATION =========================
   Future<List<double>> _generateEmbedding(Face face) async {
     final bytes = await image.value!.readAsBytes();
     final img.Image original = img.decodeImage(bytes)!;
@@ -160,9 +144,7 @@ class FaceRegistrationController extends GetxController {
     return List<double>.from(output[0]);
   }
 
-  // =========================
-  // REGISTER UI
-  // =========================
+
   void _showRegisterBottomSheet(List<double> embedding) {
     Get.bottomSheet(
       Container(
@@ -178,7 +160,7 @@ class FaceRegistrationController extends GetxController {
               "Register Face",
               style: globalTextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 15),
@@ -202,7 +184,7 @@ class FaceRegistrationController extends GetxController {
             AppPrimaryButton(
               text: "Register",
               textColor: Colors.white,
-              bgColor: Colors.grey.shade600,
+              bgColor: Colors.grey.shade400,
               onTap: () => _registerFace(embedding),
             ),
             const SizedBox(height: 25),
@@ -213,9 +195,8 @@ class FaceRegistrationController extends GetxController {
     );
   }
 
-  // =========================
-  // SAVE TO SQLITE
-  // =========================
+
+  // SAVE TO SQLITE =========================
   Future<void> _registerFace(List<double> embedding) async {
     final name = nameController.text.trim();
 
@@ -252,9 +233,7 @@ class FaceRegistrationController extends GetxController {
     }
   }
 
-  // =========================
-  // HELPERS
-  // =========================
+
   void _showError(String message) {
     Get.snackbar(
       "Error",

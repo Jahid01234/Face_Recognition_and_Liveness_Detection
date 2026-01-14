@@ -21,18 +21,16 @@ class RegisteredFacesScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-
-              /// 🔙 Header
               Row(
                 children: [
                   GestureDetector(
                     onTap: Get.back,
                     child: const Icon(
                       Icons.arrow_back_ios_rounded,
-                      color: Colors.black54,
+                      color: Colors.grey,
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 40),
                   Text(
                     "Registered Faces",
                     style: globalTextStyle(
@@ -41,24 +39,27 @@ class RegisteredFacesScreen extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const Spacer(),
                 ],
               ),
-
               const SizedBox(height: 20),
 
-              /// 📋 Face List
+              // Face List..........
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                        child: CircularProgressIndicator(),
+                    );
                   }
 
                   if (controller.faces.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
                         "No faces registered yet",
-                        style: TextStyle(color: Colors.black54),
+                        style: globalTextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                        ),
                       ),
                     );
                   }
@@ -68,6 +69,7 @@ class RegisteredFacesScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final face = controller.faces[index];
                       return Container(
+                        width: double.infinity,
                         margin: const EdgeInsets.only(bottom: 15),
                         padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
@@ -83,7 +85,6 @@ class RegisteredFacesScreen extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            /// Avatar
                             CircleAvatar(
                               radius: 28,
                               backgroundColor: Colors.green.shade200,
@@ -91,17 +92,23 @@ class RegisteredFacesScreen extends StatelessWidget {
                                   (face.imagePaths.isNotEmpty &&
                                       File(face.imagePaths).existsSync())
                                   ? ClipOval(
+                                    child: SizedBox(
+                                      width: 56,
+                                      height: 56,
                                       child: Image.file(
                                         File(face.imagePaths),
                                         fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) {
+                                          return const Icon(Icons.person, size: 28);
+                                        },
                                       ),
-                                    )
-                                  : Icon(Icons.person, size: 28),
+                                    ),
+                                  )
+
+                                      : Icon(Icons.person, size: 28),
                             ),
 
                             const SizedBox(width: 15),
-
-                            /// Name + Info
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
