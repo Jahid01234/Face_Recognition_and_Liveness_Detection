@@ -11,7 +11,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AppSizes().init(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(

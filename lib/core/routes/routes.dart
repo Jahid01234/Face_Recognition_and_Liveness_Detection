@@ -2,11 +2,13 @@ import 'package:face_recognition_and_detection/features/face_recognition/view/fa
 import 'package:face_recognition_and_detection/features/face_registration/view/face_registration_screen.dart';
 import 'package:face_recognition_and_detection/features/home/view/home_screen.dart';
 import 'package:face_recognition_and_detection/features/registered_faces/view/registered_faces.dart';
+import 'package:face_recognition_and_detection/features/splash/view/splash_screen.dart';
 import 'package:get/get.dart';
 
 
 class AppRoutes {
   // Get routes name here.......
+  static const String splash = '/splash';
   static const String home = '/home';
   static const String faceRegistration = '/faceRegistration';
   static const String registeredFaces = '/registeredFaces';
@@ -18,6 +20,11 @@ class AppRoutes {
 
   // Get routes here.......
   static List<GetPage> routes = [
+    GetPage(
+      name: splash,
+      page: ()=> SplashScreen(),
+      transition: Transition.leftToRight,
+    ),
     GetPage(
       name: home,
       page: ()=> HomeScreen(),
