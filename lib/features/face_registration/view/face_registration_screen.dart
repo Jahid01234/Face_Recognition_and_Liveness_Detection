@@ -1,19 +1,19 @@
 import 'package:face_recognition_and_detection/core/const/app_size.dart';
 import 'package:face_recognition_and_detection/core/const/images_path.dart';
+import 'package:face_recognition_and_detection/core/global_widgets/app_header_tile.dart';
 import 'package:face_recognition_and_detection/core/global_widgets/app_primary_button.dart';
-import 'package:face_recognition_and_detection/core/style/global_text_style.dart';
+import 'package:face_recognition_and_detection/core/global_widgets/face_painter.dart';
 import 'package:face_recognition_and_detection/features/face_registration/controller/face_registration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
-
 
 
 class FaceRegistrationScreen extends StatelessWidget {
   FaceRegistrationScreen({super.key});
 
-  final FaceRegistrationController controller =
-  Get.put(FaceRegistrationController());
+  final FaceRegistrationController controller = Get.put(
+    FaceRegistrationController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -25,85 +25,63 @@ class FaceRegistrationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: Get.back,
-                    child: const Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  Text(
-                    "Face Registration",
-                    style: globalTextStyle(
-                      fontSize: 22,
-                      color: Colors.black45,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
+              AppHeaderTile(title: "Face Registration"),
+              SizedBox(height: getHeight(150)),
 
-             SizedBox(height: getHeight(150)),
-
-              // Image Preview Card.......
+              // Image card.......
               Obx(() {
-                if (controller.image.value == null) {
+                if (controller.image.value == null ||
+                    controller.imageSize.value == null) {
                   return _emptyPreview();
                 }
 
                 final file = controller.image.value!;
 
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Center(
-                      child: Container(
-                        height: 300,
-                        width: 280,
-                        padding: const EdgeInsets.all(12),
-                        decoration: _cardDecoration(),
-                        child: ClipRRect(
+                return Center(
+                  child: Container(
+                    height: 300,
+                    width: 280,
+                    padding: const EdgeInsets.all(12),
+                    decoration: _cardDecoration(),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
                           borderRadius: BorderRadius.circular(18),
-                          child: CustomPaint(
-                            painter: FacePainter(
-                              controller.faces,
-                            ),
-                            child: Image.file(
-                              file,
-                              fit: BoxFit.cover,
-                            ),
+                          child: Image.file(
+                            file,
+                            fit: BoxFit.contain,
                           ),
                         ),
-                      ),
-                    ),
 
-                    if (controller.isProcessing.value)
-                      Center(
-                        child: Container(
-                          height: 300,
-                          width: 280,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
+                        // 🔹 FACE BOX
+                        CustomPaint(
+                          painter: FacePainter(
+                            controller.faces,
+                            controller.imageSize.value!,
                           ),
                         ),
-                      ),
-                  ],
+
+                        if (controller.isProcessing.value)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(color: Colors.white),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 );
-               },
-              ),
+              }),
+
 
               const Spacer(),
               Obx(
-                    () => Row(
+                () => Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AppPrimaryButton(
@@ -142,7 +120,7 @@ class FaceRegistrationScreen extends StatelessWidget {
     );
   }
 
-  /// Empty State
+
   Widget _emptyPreview() {
     return Center(
       child: Container(
@@ -152,13 +130,13 @@ class FaceRegistrationScreen extends StatelessWidget {
         decoration: _cardDecoration(),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                ImagesPath.appLogo,
-                width: 120,
-                height: 120,
-                fit: BoxFit.contain,
-              ),
-            ),
+          child: Image.asset(
+            ImagesPath.appLogo,
+            width: 120,
+            height: 120,
+            fit: BoxFit.contain,
+          ),
+        ),
       ),
     );
   }
@@ -178,24 +156,3 @@ class FaceRegistrationScreen extends StatelessWidget {
   }
 }
 
-// Face Bounding Box Painter
-class FacePainter extends CustomPainter {
-  final List<Face> faces;
-  FacePainter(this.faces);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (size.height.isNaN || size.width.isNaN) return;
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..color = Colors.green;
-
-    for (final face in faces) {
-      canvas.drawRect(face.boundingBox, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:face_recognition_and_detection/core/const/app_size.dart';
+import 'package:face_recognition_and_detection/core/global_widgets/app_header_tile.dart';
 import 'package:face_recognition_and_detection/core/style/global_text_style.dart';
 import 'package:face_recognition_and_detection/features/registered_faces/controller/registered_faces_controller.dart';
 import 'package:flutter/material.dart';
@@ -21,35 +22,14 @@ class RegisteredFacesScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: Get.back,
-                    child: const Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  Text(
-                    "Registered Faces",
-                    style: globalTextStyle(
-                      fontSize: 22,
-                      color: Colors.black45,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
+              AppHeaderTile(title: "Registered Faces"),
               const SizedBox(height: 20),
 
               // Face List..........
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {
-                    return const Center(
-                        child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (controller.faces.isEmpty) {
@@ -57,8 +37,8 @@ class RegisteredFacesScreen extends StatelessWidget {
                       child: Text(
                         "No faces registered yet",
                         style: globalTextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
+                          fontSize: 14,
+                          color: Colors.black54,
                         ),
                       ),
                     );
@@ -77,9 +57,9 @@ class RegisteredFacesScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.12),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                              color: Colors.black.withValues(alpha: 0.10),
+                              blurRadius: 3,
+                              offset: const Offset(0, 0),
                             ),
                           ],
                         ),
@@ -92,20 +72,22 @@ class RegisteredFacesScreen extends StatelessWidget {
                                   (face.imagePaths.isNotEmpty &&
                                       File(face.imagePaths).existsSync())
                                   ? ClipOval(
-                                    child: SizedBox(
-                                      width: 56,
-                                      height: 56,
-                                      child: Image.file(
-                                        File(face.imagePaths),
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) {
-                                          return const Icon(Icons.person, size: 28);
-                                        },
+                                      child: SizedBox(
+                                        width: 56,
+                                        height: 56,
+                                        child: Image.file(
+                                          File(face.imagePaths),
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) {
+                                            return const Icon(
+                                              Icons.person,
+                                              size: 28,
+                                            );
+                                          },
+                                        ),
                                       ),
-                                    ),
-                                  )
-
-                                      : Icon(Icons.person, size: 28),
+                                    )
+                                  : Icon(Icons.person, size: 28),
                             ),
 
                             const SizedBox(width: 15),
@@ -115,14 +97,16 @@ class RegisteredFacesScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     face.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: globalTextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "Id: ${face.id}",
+                                    "ID: ${face.id}",
                                     style: globalTextStyle(
                                       fontSize: 12,
                                       color: Colors.black54,
@@ -133,8 +117,8 @@ class RegisteredFacesScreen extends StatelessWidget {
                             ),
                             IconButton(
                               icon: const Icon(
-                                Icons.delete_forever,
-                                color: Colors.red,
+                                Icons.delete,
+                                color: Colors.grey,
                               ),
                               onPressed: () {
                                 controller.deleteFace(face.id!);
@@ -155,3 +139,4 @@ class RegisteredFacesScreen extends StatelessWidget {
     );
   }
 }
+

@@ -19,6 +19,8 @@ class FaceRecognitionController extends GetxController {
   late Interpreter _interpreter;
   bool _modelLoaded = false;
 
+  final Rx<Size?> imageSize = Rx<Size?>(null);
+
 
   @override
   void onInit() {
@@ -55,7 +57,7 @@ class FaceRecognitionController extends GetxController {
 
     image.value = File(picked.path);
     faces.clear();
-    recognizedName.value = "";
+    imageSize.value = null;
 
     await _detectAndRecognize();
   }
@@ -66,6 +68,19 @@ class FaceRecognitionController extends GetxController {
 
     try {
       isProcessing.value = true;
+
+      final bytes = await image.value!.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+
+      if (decodedImage == null) {
+        _showError("Invalid image");
+        return;
+      }
+
+      imageSize.value = Size(
+        decodedImage.width.toDouble(),
+        decodedImage.height.toDouble(),
+      );
 
       final inputImage = InputImage.fromFile(image.value!);
       final detectedFaces =

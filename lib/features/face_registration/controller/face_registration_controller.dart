@@ -21,6 +21,9 @@ class FaceRegistrationController extends GetxController {
   late Interpreter _interpreter;
   bool _modelLoaded = false;
 
+  final Rx<Size?> imageSize = Rx<Size?>(null);
+
+
 
   @override
   void onInit() {
@@ -65,6 +68,7 @@ class FaceRegistrationController extends GetxController {
 
     image.value = File(picked.path);
     faces.clear();
+    imageSize.value = null;
 
     await _detectFace();
   }
@@ -76,6 +80,20 @@ class FaceRegistrationController extends GetxController {
 
     try {
       isProcessing.value = true;
+
+
+      final bytes = await image.value!.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+
+      if (decodedImage == null) {
+        _showError("Invalid image");
+        return;
+      }
+
+      imageSize.value = Size(
+        decodedImage.width.toDouble(),
+        decodedImage.height.toDouble(),
+      );
 
       final inputImage = InputImage.fromFile(image.value!);
       final detectedFaces =
@@ -103,6 +121,7 @@ class FaceRegistrationController extends GetxController {
       isProcessing.value = false;
     }
   }
+
 
 
   // EMBEDDING GENERATION =========================
@@ -160,6 +179,7 @@ class FaceRegistrationController extends GetxController {
               "Register Face",
               style: globalTextStyle(
                 fontSize: 20,
+                color: Colors.black45,
                 fontWeight: FontWeight.w600,
               ),
             ),

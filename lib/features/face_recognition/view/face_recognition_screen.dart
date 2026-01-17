@@ -1,18 +1,20 @@
 import 'package:face_recognition_and_detection/core/const/app_size.dart';
 import 'package:face_recognition_and_detection/core/const/images_path.dart';
+import 'package:face_recognition_and_detection/core/global_widgets/app_header_tile.dart';
 import 'package:face_recognition_and_detection/core/global_widgets/app_primary_button.dart';
+import 'package:face_recognition_and_detection/core/global_widgets/face_painter.dart';
 import 'package:face_recognition_and_detection/core/style/global_text_style.dart';
 import 'package:face_recognition_and_detection/features/face_recognition/controller/face_recognition_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
 
 
 class FaceRecognitionScreen extends StatelessWidget {
   FaceRecognitionScreen({super.key});
 
-  final FaceRecognitionController controller =
-  Get.put(FaceRecognitionController());
+  final FaceRecognitionController controller = Get.put(
+    FaceRecognitionController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -24,81 +26,97 @@ class FaceRecognitionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: Get.back,
-                    child: const Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                  Text(
-                    "Face Recognition",
-                    style: globalTextStyle(
-                      fontSize: 22,
-                      color: Colors.black45,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-
-             SizedBox(height: getHeight(150)),
+              AppHeaderTile(title: "Face Recognition"),
+              SizedBox(height: getHeight(150)),
 
               // Image card.......
               Obx(() {
-                if (controller.image.value == null) {
+                if (controller.image.value == null ||
+                    controller.imageSize.value == null) {
                   return _emptyCard();
                 }
-                return Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        height: 300,
-                        width: 280,
-                        decoration: _cardDecoration(),
-                        padding: EdgeInsets.all(10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: CustomPaint(
-                            painter: FacePainter(controller.faces),
-                            child: Image.file(
-                              controller.image.value!,
-                              fit: BoxFit.cover,
-                            ),
+
+                final file = controller.image.value!;
+
+                return Center(
+                  child: Container(
+                    height: 300,
+                    width: 280,
+                    padding: const EdgeInsets.all(12),
+                    decoration: _cardDecoration(),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.file(
+                            file,
+                            fit: BoxFit.contain,
                           ),
                         ),
-                      ),
-                    ),
 
-                    if (controller.isProcessing.value)
-                      const Positioned.fill(
-                        child: Center(
-                          child: CircularProgressIndicator(),
+                        // 🔹 FACE BOX
+                        CustomPaint(
+                          painter: FacePainter(
+                            controller.faces,
+                            controller.imageSize.value!,
+                          ),
                         ),
-                      ),
-                  ],
+
+                        if (controller.isProcessing.value)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(color: Colors.white),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 );
               }),
+
 
               const SizedBox(height: 30),
 
               // NAME RESULT........
-              Obx(() => Text(
-                controller.recognizedName.value.isEmpty
-                    ? ""
-                    : "Result: ${controller.recognizedName.value}",
-                style: globalTextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              )),
+              Obx(
+                    () {
+                  if (controller.recognizedName.value.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Result: ",
+                          style: globalTextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        TextSpan(
+                          text: controller.recognizedName.value,
+                          style: globalTextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
 
               const Spacer(),
               Obx(
-                    () => Row(
+                () => Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     AppPrimaryButton(
@@ -136,7 +154,6 @@ class FaceRecognitionScreen extends StatelessWidget {
     );
   }
 
-
   Widget _emptyCard() {
     return Center(
       child: Container(
@@ -172,24 +189,4 @@ class FaceRecognitionScreen extends StatelessWidget {
   }
 }
 
-// Face Bounding Box Painter
-class FacePainter extends CustomPainter {
-  final List<Face> faces;
-  FacePainter(this.faces);
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (size.height.isNaN || size.width.isNaN) return;
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..color = Colors.green;
-
-    for (final face in faces) {
-      canvas.drawRect(face.boundingBox, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
