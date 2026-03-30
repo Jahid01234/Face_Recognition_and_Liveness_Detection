@@ -7,9 +7,9 @@ import 'package:face_recognition_and_detection/core/style/global_text_style.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:image/image.dart' as img;
 
 class FaceRegistrationController extends GetxController {
   final TextEditingController nameController = TextEditingController();
