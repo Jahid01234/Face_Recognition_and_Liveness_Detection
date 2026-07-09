@@ -59,7 +59,7 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(height: getHeight(20)),
               AppPrimaryButton(
-                text: "Registered Faces",
+                text: "Registered Faces List",
                 bgColor: Colors.grey.shade400,
                 icon: Icons.list_alt,
                 textColor: Colors.white,
